@@ -110,6 +110,7 @@
   }
 
   function startGame() {
+    unlockAudio();
     mode = modeValue();
     const pool = clipsFor(mode);
     if (!pool.length) return refreshStart();
@@ -153,15 +154,34 @@
     startTimer();
   }
 
+  // ---------- countdown sound ----------
+  let actx = null;
+  const soundOn = () => $("sound").checked;
+  function unlockAudio() {
+    try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); if (actx.state === "suspended") actx.resume(); } catch (e) {}
+  }
+  function beep(freq, dur) {
+    if (!actx || !soundOn()) return;
+    try {
+      const o = actx.createOscillator(), g = actx.createGain(), t = actx.currentTime;
+      o.type = "sine"; o.frequency.value = freq;
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.25, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      o.connect(g); g.connect(actx.destination); o.start(t); o.stop(t + dur + 0.02);
+    } catch (e) {}
+  }
+
   // ---------- timer ----------
   function startTimer() {
-    tStart = performance.now(); clearInterval(tInt);
+    tStart = performance.now(); clearInterval(tInt); let lastSec = Infinity;
     const render = () => {
       const el = (performance.now() - tStart) / 1000, left = Math.max(0, CFG.timeLimit - el);
       $("t-num").textContent = Math.ceil(left) + "s";
       $("t-bar").style.width = (left / CFG.timeLimit * 100) + "%";
       $("t-bar").classList.toggle("low", left <= 5);
       $("t-bonus").style.visibility = el <= CFG.bonusWindow ? "visible" : "hidden";
+      const sec = Math.ceil(left);
+      if (sec < lastSec && sec >= 1 && sec <= 5) beep(sec === 1 ? 1100 : 700, sec === 1 ? 0.25 : 0.12);
+      lastSec = Math.min(lastSec, sec);
       if (left <= 0) submit(null);
     };
     render(); tInt = setInterval(render, 100);
