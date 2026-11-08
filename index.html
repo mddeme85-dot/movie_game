@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reel Quiz</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header><h1>Reel Quiz</h1><nav>
+  <button id="nav-play" class="tab active">Play</button>
+  <button id="nav-edit" class="tab">Clips</button>
+</nav></header>
+
+<main>
+<section id="view-play">
+  <div id="screen-start">
+    <p>Watch a short clip, then answer the question.</p>
+    <label>Rounds <select id="rounds"><option>5</option><option>10</option><option>20</option></select></label>
+    <button id="btn-start" class="primary">Start game</button>
+    <p id="start-msg" class="muted"></p>
+  </div>
+
+  <div id="screen-game" hidden>
+    <div class="status"><span id="st-round"></span><span id="st-score"></span></div>
+    <div class="player-wrap"><div id="player"></div><div id="cover" hidden>Clip finished</div></div>
+    <button id="btn-replay">Replay clip</button>
+    <h2 id="q-prompt"></h2>
+    <div id="q-options"></div>
+    <p id="q-feedback"></p>
+    <button id="btn-next" class="primary" hidden>Next</button>
+  </div>
+
+  <div id="screen-end" hidden>
+    <h2 id="end-score"></h2>
+    <button id="btn-again" class="primary">Play again</button>
+  </div>
+</section>
+
+<section id="view-edit" hidden>
+  <h2>Add a clip</h2>
+  <form id="clip-form">
+    <label>YouTube URL <input id="f-url" required placeholder="https://www.youtube.com/watch?v=..."></label>
+    <div class="row">
+      <label>Start (m:ss or seconds) <input id="f-start" required value="0:00"></label>
+      <label>End <input id="f-end" required value="0:15"></label>
+    </div>
+    <label>Question type
+      <select id="f-type">
+        <option>Release year</option><option>Director</option><option>Next line</option>
+        <option>Character name</option><option>Actor</option><option>Title</option><option>Other</option>
+      </select>
+    </label>
+    <label>Question <input id="f-prompt" required placeholder="What year was this film released?"></label>
+    <label>Correct answer <input id="f-answer" required></label>
+    <label>Wrong answers (one per line, 2 to 3) <textarea id="f-wrong" rows="3" required></textarea></label>
+    <button class="primary" type="submit">Save clip</button>
+  </form>
+
+  <h2>Your clips <span id="clip-count" class="muted"></span></h2>
+  <ul id="clip-list"></ul>
+  <div class="row">
+    <button id="btn-export">Export JSON</button>
+    <label class="btn">Import JSON <input id="f-import" type="file" accept=".json" hidden></label>
+  </div>
+</section>
+</main>
+
+<script src="clips.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
