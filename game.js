@@ -2,7 +2,7 @@
   "use strict";
   const $ = id => document.getElementById(id);
   const QT = window.QUESTION_TYPES;
-  const CFG = { timeLimit: 15, bonusWindow: 5, base: 100, bonus: 50, hardMultiplier: 3 };
+  const CFG = { timeLimit: 15, bonusWindow: 5, base: 100, bonus: 50, hardMultiplier: 3, titleMaskPct: 12 };
 
   // ---------- helpers ----------
   const shuffle = a => { a = [...a]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
@@ -55,6 +55,10 @@
   const pt = () => { try { return player && player.getCurrentTime ? player.getCurrentTime() : 0; } catch (e) { return 0; } };
   const safe = fn => { try { fn(); } catch (e) {} };
 
+  // Turn off YouTube's own captions (burned-in subtitles need the per-clip bottom mask instead).
+  function killCaptions() { safe(() => player.unloadModule("captions")); safe(() => player.unloadModule("cc")); }
+  $("mask-top").style.height = CFG.titleMaskPct + "%"; // hides YouTube's title bar so it can't give the answer away
+
   function loadClip(c) {
     if (apiFailed) return videoProblem("Couldn't load the YouTube player. Check your connection.");
     const my = ++token, id = videoId(c.url);
@@ -63,8 +67,8 @@
       if (!player) {
         player = new YT.Player("player", {
           videoId: id, width: "100%", height: "100%",
-          playerVars: { autoplay: 1, start: Math.floor(c.start), controls: 0, rel: 0, modestbranding: 1, disablekb: 1, playsinline: 1, iv_load_policy: 3, fs: 0 },
-          events: { onReady: e => e.target.playVideo(), onStateChange, onError: () => videoProblem("This video can't be embedded, or has been removed.") },
+          playerVars: { autoplay: 1, start: Math.floor(c.start), controls: 0, rel: 0, modestbranding: 1, disablekb: 1, playsinline: 1, iv_load_policy: 3, fs: 0, cc_load_policy: 0 },
+          events: { onReady: e => { killCaptions(); e.target.playVideo(); }, onStateChange, onError: () => videoProblem("This video can't be embedded, or has been removed.") },
         });
       } else {
         player.loadVideoById({ videoId: id, startSeconds: c.start });
@@ -73,7 +77,7 @@
   }
 
   function onStateChange(e) {
-    if (e.data === 1) $("tap").hidden = true; // PLAYING
+    if (e.data === 1) { $("tap").hidden = true; killCaptions(); } // PLAYING
     if (e.data === 0) { // ENDED
       if (stage === "intro") ask();
       else if (stage === "after") finish();
@@ -127,6 +131,7 @@
     $("st-score").textContent = `Score ${score}`;
     $("q-panel").hidden = true; $("endcard").hidden = true; $("tap").hidden = true;
     $("watch-msg").textContent = "Watch the clip. The question comes up when it pauses.";
+    $("mask-bottom").style.height = (cur.maskBottom || 0) + "%";
     loadClip(cur); armTap();
   }
 
@@ -139,6 +144,7 @@
     $("q-prompt").textContent = cur.prompt || qt.prompt;
     $("q-panel").hidden = false;
     $("q-options").hidden = mode !== "easy"; $("a-form").hidden = mode !== "hard";
+    if (mode !== "easy") $("q-options").innerHTML = "";
 
     if (mode === "easy") {
       const box = $("q-options"); box.innerHTML = "";
@@ -294,6 +300,7 @@
     const clip = { url: $("f-url").value.trim(), start, pauseAt, type: typeSel.value, prompt: $("f-prompt").value.trim(),
       answer: $("f-answer").value.trim(), accept: lines($("f-accept").value), wrong };
     if (end !== null) clip.end = end;
+    const mb = Number($("f-maskb").value); if (mb > 0) clip.maskBottom = Math.min(mb, 40);
     mine.push(clip); save();
     e.target.reset(); $("f-start").value = "0:00"; $("f-pause").value = "0:15"; typeSel.value = "next_line"; lastDefault = ""; $("f-prompt").value = ""; applyDefaultPrompt();
     renderList();

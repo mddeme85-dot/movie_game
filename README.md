@@ -23,3 +23,7 @@ Add one entry to `QUESTION_TYPES` in `questions.js` (label, default prompt, hint
 ## Notes
 - Some YouTube uploads block embedding. The game shows "Video unavailable" and skips scoring for that round.
 - Speech recognition in Chrome sends audio to Google's service.
+
+## Hiding the title and subtitles
+- A black strip covers the top of the video (`titleMaskPct` in `CFG`, default 12%) so YouTube's title bar cannot reveal the answer.
+- YouTube captions are switched off. Subtitles burned into the picture cannot be removed, so set `maskBottom` (percent) on the clip, or "Hide bottom %" in the editor.

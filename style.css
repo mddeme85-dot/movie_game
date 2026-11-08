@@ -46,3 +46,9 @@ legend{color:var(--muted);font-size:14px;padding:0 6px}
 #btn-mic.on{border-color:var(--bad);color:var(--bad)}
 .player-wrap{min-height:180px}
 li .tag{color:var(--accent);font-size:12px;margin-left:6px}
+
+/* hidden must win over display rules set on ids (this was the Hard mode bug) */
+[hidden]{display:none!important}
+.mask{position:absolute;left:0;right:0;z-index:1;background:#000;pointer-events:none}
+#mask-top{top:0}
+#mask-bottom{bottom:0;height:0}
