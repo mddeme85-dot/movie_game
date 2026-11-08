@@ -1,18 +1,25 @@
 # Reel Quiz
 
-A Scene-It style quiz. Plays a short YouTube clip (start and end times), then asks a multiple choice question.
+Scene-It style quiz. A YouTube clip plays, pauses at a set point and asks a question. Answer, then the rest of the clip plays and an end card shows Correct or Incorrect.
 
 ## Run
 ```bash
 python3 -m http.server 8000
 ```
-Open http://localhost:8000. Serve over http, not file://, or the YouTube player may refuse to load.
+Open http://localhost:8000 (serve over http, not file://).
 
-## Add clips
-Use the **Clips** tab (stored in your browser, with JSON export/import), or seed `clips.js`.
-Each clip: YouTube URL, start/end, question type, question, correct answer, 2-3 wrong answers.
+## Modes and scoring
+- Easy: four choices (needs 2-3 wrong answers on the clip).
+- Hard: type or speak (Chrome/Edge/Safari speech recognition; fuzzy matched, so small typos and "my" vs no "my" are fine).
+- 15 seconds to answer. Correct = 100. Answered within 5 seconds = +50. Tune in `CFG` at the top of `game.js`.
+
+## Adding clips
+Clips tab (saved in the browser, export/import JSON), or edit `clips.js` (fields documented at the top).
+`pauseAt` is where the question appears; `end` is optional (blank plays to the end of the video).
+
+## Adding a question type
+Add one entry to `QUESTION_TYPES` in `questions.js` (label, default prompt, hint, check function). It appears in the editor automatically.
 
 ## Notes
-- Clips use the official YouTube IFrame player. Some uploads block embedding and will show an error.
-- The controls are hidden and the clip auto-pauses at the end time. Players can still see the title if YouTube shows it on pause, so prefer uploads where the title is not a giveaway.
-- Only embed videos you are entitled to use. Official studio trailers and channel clips are the safest source.
+- Some YouTube uploads block embedding. The game shows "Video unavailable" and skips scoring for that round.
+- Speech recognition in Chrome sends audio to Google's service.

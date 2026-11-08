@@ -15,7 +15,12 @@
 <main>
 <section id="view-play">
   <div id="screen-start">
-    <p>Watch a short clip, then answer the question.</p>
+    <p>Watch the clip. It pauses and asks a question. You have 15 seconds, and answering in the first 5 earns a speed bonus.</p>
+    <fieldset>
+      <legend>Mode</legend>
+      <label class="radio"><input type="radio" name="mode" value="easy" checked> Easy: pick from four answers</label>
+      <label class="radio"><input type="radio" name="mode" value="hard"> Hard: type or speak your answer</label>
+    </fieldset>
     <label>Rounds <select id="rounds"><option>5</option><option>10</option><option>20</option></select></label>
     <button id="btn-start" class="primary">Start game</button>
     <p id="start-msg" class="muted"></p>
@@ -23,12 +28,29 @@
 
   <div id="screen-game" hidden>
     <div class="status"><span id="st-round"></span><span id="st-score"></span></div>
-    <div class="player-wrap"><div id="player"></div><div id="cover" hidden>Clip finished</div></div>
-    <button id="btn-replay">Replay clip</button>
-    <h2 id="q-prompt"></h2>
-    <div id="q-options"></div>
-    <p id="q-feedback"></p>
-    <button id="btn-next" class="primary" hidden>Next</button>
+    <div class="player-wrap">
+      <div id="player"></div>
+      <button id="tap" hidden>Tap to play</button>
+      <div id="endcard" hidden>
+        <h2 id="end-title"></h2>
+        <p id="end-answer"></p>
+        <p id="end-points"></p>
+        <button id="btn-next" class="primary">Next</button>
+      </div>
+    </div>
+    <p id="watch-msg" class="muted"></p>
+
+    <div id="q-panel" hidden>
+      <div class="timer"><div id="t-bar"></div></div>
+      <div class="timer-row"><span id="t-bonus">Speed bonus available</span><span id="t-num"></span></div>
+      <h2 id="q-prompt"></h2>
+      <div id="q-options" hidden></div>
+      <form id="a-form" hidden autocomplete="off">
+        <input id="a-input" placeholder="Your answer" autocomplete="off">
+        <button type="button" id="btn-mic" hidden>Speak</button>
+        <button class="primary" type="submit">Answer</button>
+      </form>
+    </div>
   </div>
 
   <div id="screen-end" hidden>
@@ -43,29 +65,27 @@
     <label>YouTube URL <input id="f-url" required placeholder="https://www.youtube.com/watch?v=..."></label>
     <div class="row">
       <label>Start (m:ss or seconds) <input id="f-start" required value="0:00"></label>
-      <label>End <input id="f-end" required value="0:15"></label>
+      <label>Ask question at <input id="f-pause" required value="0:15"></label>
+      <label>Play until (optional) <input id="f-end" placeholder="blank = end of video"></label>
     </div>
-    <label>Question type
-      <select id="f-type">
-        <option>Release year</option><option>Director</option><option>Next line</option>
-        <option>Character name</option><option>Actor</option><option>Title</option><option>Other</option>
-      </select>
-    </label>
-    <label>Question <input id="f-prompt" required placeholder="What year was this film released?"></label>
+    <label>Question type <select id="f-type"></select></label>
+    <label>Question <input id="f-prompt" required></label>
     <label>Correct answer <input id="f-answer" required></label>
-    <label>Wrong answers (one per line, 2 to 3) <textarea id="f-wrong" rows="3" required></textarea></label>
+    <label>Also accept in Hard mode (optional, one per line) <textarea id="f-accept" rows="2"></textarea></label>
+    <label>Wrong answers for Easy mode (one per line, 2 to 3) <textarea id="f-wrong" rows="3"></textarea></label>
     <button class="primary" type="submit">Save clip</button>
   </form>
 
-  <h2>Your clips <span id="clip-count" class="muted"></span></h2>
+  <h2>Clips <span id="clip-count" class="muted"></span></h2>
   <ul id="clip-list"></ul>
   <div class="row">
-    <button id="btn-export">Export JSON</button>
+    <button id="btn-export">Export my clips (JSON)</button>
     <label class="btn">Import JSON <input id="f-import" type="file" accept=".json" hidden></label>
   </div>
 </section>
 </main>
 
+<script src="questions.js"></script>
 <script src="clips.js"></script>
 <script src="game.js"></script>
 </body>
