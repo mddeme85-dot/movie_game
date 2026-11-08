@@ -11,7 +11,7 @@ Open http://localhost:8000 (serve over http, not file://).
 ## Modes and scoring
 - Easy: four choices (needs 2-3 wrong answers on the clip).
 - Hard: type or speak (Chrome/Edge/Safari speech recognition; fuzzy matched, so small typos and "my" vs no "my" are fine).
-- 15 seconds to answer. Correct = 100. Answered within 5 seconds = +50. Tune in `CFG` at the top of `game.js`.
+- 15 seconds to answer. Correct = 100. Answered within 5 seconds = +50. Hard mode points are multiplied by 3 (300, or 450 with the speed bonus). Tune in `CFG` at the top of `game.js`.
 
 ## Adding clips
 Clips tab (saved in the browser, export/import JSON), or edit `clips.js` (fields documented at the top).

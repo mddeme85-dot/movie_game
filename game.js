@@ -2,7 +2,7 @@
   "use strict";
   const $ = id => document.getElementById(id);
   const QT = window.QUESTION_TYPES;
-  const CFG = { timeLimit: 15, bonusWindow: 5, base: 100, bonus: 50 };
+  const CFG = { timeLimit: 15, bonusWindow: 5, base: 100, bonus: 50, hardMultiplier: 3 };
 
   // ---------- helpers ----------
   const shuffle = a => { a = [...a]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
@@ -180,7 +180,7 @@
         : candidates.some(g => QT[cur.type].check(g, accepted));
     }
     const fast = ok && elapsed <= CFG.bonusWindow;
-    result = { ok, timedOut, fast, given: timedOut ? "" : candidates[0], points: ok ? CFG.base + (fast ? CFG.bonus : 0) : 0 };
+    result = { ok, timedOut, fast, given: timedOut ? "" : candidates[0], points: ok ? (CFG.base + (fast ? CFG.bonus : 0)) * (mode === "hard" ? CFG.hardMultiplier : 1) : 0 };
     stage = "after";
     $("q-panel").hidden = true;
     $("watch-msg").textContent = "Answer locked in. Watch the rest of the clip.";
